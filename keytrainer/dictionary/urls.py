@@ -19,7 +19,10 @@ urlpatterns = [
     path('word-create', views.WordCreateView.as_view(), name='word_create'),
     path('word-delete/<int:pk>/', views.WordDeleteView.as_view(), name='word_delete'),
     path('word-update/<int:pk>/', views.WordUpdateView.as_view(), name='word_update'),
+
     path('word-file-upload/', views.upload_file, name='word_file_upload'),
+    path('word-add-usimbols/', views.add_specsimbols, name='word_add_simbols'),
+
     path('word-delete-all/', views.word_delete_all, name='word_delete_all'),
 
     path('traning-word-list/<int:pk>/', views.TraningWordList.as_view(), name='traning_word_list'),

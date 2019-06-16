@@ -53,6 +53,11 @@ class WordListView(ListView):
     # TODO: вывести пагинацию на стрнице
     paginate_by = 100
 
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        context['obj_count'] = self.model.objects.count()
+        return context
+
 
 class WordCreateView(CreateView):
     model = Word
@@ -99,7 +104,8 @@ def handle_uploaded_file(f):
                 # Создаем слово если его еще нету в базе
                 # Если ест желательно это увидеть
                 ERROR_KEY = 'error'
-                good_word = str(word).lower().replace(' ', '').replace('\n', '').replace('\t', '').rstrip()
+                # good_word = str(word).lower().replace(' ', '').replace('\n', '').replace('\t', '').rstrip()
+                good_word = word.lower().rstrip()
 
                 # print('good_word', good_word)
                 # print('len', len(good_word))
@@ -109,33 +115,94 @@ def handle_uploaded_file(f):
                 except Exception:
                     word_result[ERROR_KEY] = True
                     result.append(word_result)
-                else:
-                    # Если слово прошло, добавляем знаки припинания [ ] ; ' \ , . /
-                    end_simbols = [',', '.', ';']
-                    for item in end_simbols:
-                        new_name = new_word.name + item
-                        Word.objects.create(name=new_name)
-
-                    random_simbols = ['/', '\\']
-                    for item in random_simbols:
-                        if random.random() > 0.5:
-                            new_name = new_word.name + item
-                        else:
-                            new_name = item + new_word.name
-                        Word.objects.create(name=new_name)
-
-                    pair_simbols = [('[', ']')]
-                    for item in pair_simbols:
-                        new_name = item[0] + new_word.name + item[1]
-                        Word.objects.create(name=new_name)
-
-                    both_simbols = ['\'']
-                    for item in both_simbols:
-                        new_name = item + new_word.name + item
-                        Word.objects.create(name=new_name)
-
+                # else:
+                #     # Если слово прошло, добавляем знаки припинания [ ] ; ' \ , . /
+                #     end_simbols = [',', '.', ';']
+                #     for item in end_simbols:
+                #         new_name = new_word.name + item
+                #         Word.objects.create(name=new_name)
+                #
+                #     random_simbols = ['/', '\\']
+                #     for item in random_simbols:
+                #         if random.random() > 0.5:
+                #             new_name = new_word.name + item
+                #         else:
+                #             new_name = item + new_word.name
+                #         Word.objects.create(name=new_name)
+                #
+                #     pair_simbols = [('[', ']')]
+                #     for item in pair_simbols:
+                #         new_name = item[0] + new_word.name + item[1]
+                #         Word.objects.create(name=new_name)
+                #
+                #     both_simbols = ['\'']
+                #     for item in both_simbols:
+                #         new_name = item + new_word.name + item
+                #         Word.objects.create(name=new_name)
 
         return result
+
+
+def add_specsimbols(request):
+    if request.method == 'POST':
+        words = Word.objects.all()
+        words_count = words.count()
+        current_words = 1
+        end_simbols = [',', '.', ';', '!', ':', '?']
+        random_simbols = ['/', '\\', '-', '=', '$', '%', '&', '*', '_', '+', '|']
+        pair_simbols = [('[', ']'), ('(', ')'), ('{', '}'), ('<', '>')]
+        both_simbols = ['\'', '"']
+        start_simbols = ['@', '#', '^']
+
+        #ADD_CHANCE = 0.7
+
+        wariants = [0, 1, 2, 3, 4, 5]
+
+        for word in words:
+            wariant = random.choice(wariants)
+            if wariant == 0:
+                # Добавляем такой же слова но с заглавной буквы
+                Word.objects.create(name=word.name.title())
+            elif wariant == 1:
+                # Добавляем спецсимволы
+                for item in end_simbols:
+                    new_name = word.name + item
+                    Word.objects.create(name=new_name)
+            elif wariant == 2:
+                for item in start_simbols:
+                    #if random.random() > ADD_CHANCE:
+                    new_name = item + word.name
+                    Word.objects.create(name=new_name)
+            elif wariant == 3:
+
+                for item in random_simbols:
+                    #if random.random() > ADD_CHANCE:
+                    if random.random() > 0.5:
+                        new_name = word.name + item
+                    else:
+                        new_name = item + word.name
+                    Word.objects.create(name=new_name)
+
+            elif wariant == 4:
+                for item in pair_simbols:
+                    #if random.random() > ADD_CHANCE:
+                    new_name = item[0] + word.name + item[1]
+                    Word.objects.create(name=new_name)
+
+            elif wariant == 5:
+                for item in both_simbols:
+                    #if random.random() > ADD_CHANCE:
+                    new_name = item + word.name + item
+                    Word.objects.create(name=new_name)
+
+            persent = int((current_words/words_count)*100)
+            print(word.name, ':', persent, '%')
+            current_words+=1
+
+        return HttpResponseRedirect(reverse('dictionary:word_list'))
+
+    else:
+        raise Http404
 
 
 def upload_file(request):
@@ -162,6 +229,7 @@ class TraningWordList(ListView):
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
         context['order_letters'] = self.order_lettres
+        context['obj_count'] = self.model.objects.count()
         return context
 
     def get_queryset(self):
