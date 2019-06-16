@@ -37,9 +37,9 @@ class OrderLetters(models.Model):
         user_count = self.user.words_count
         words = self.get_current_words(user_count, True)
 
-        while user_count > len(words):
-            words.append(random.choice(words))
-
+        if words:
+            while user_count > len(words):
+                words.append(random.choice(words))
 
         return ' '.join(words)
 
