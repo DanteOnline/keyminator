@@ -21,12 +21,16 @@ class OrderLetters(models.Model):
     current_letter_order = models.PositiveIntegerField(default=1)
     description = models.TextField(blank=True)
 
-    def get_current_words(self, count=None, is_random=False):
+    def get_current_words(self, count=None, is_random=True):
         words = TraningWord.get_current_words(self.current_letter, self)
+
+        #print(words)
         if is_random:
             random.shuffle(words)
         if count:
             words = words[:count]
+
+
         return words
 
     def get_current_text(self):
@@ -35,6 +39,7 @@ class OrderLetters(models.Model):
 
         while user_count > len(words):
             words.append(random.choice(words))
+
 
         return ' '.join(words)
 
@@ -64,15 +69,9 @@ class OrderLetters(models.Model):
         return str(self.name).index(letter)
 
     def get_last_letter(self, text):
-        # Если в слове есть те буквы, которых нет в последовательности
-        # print('text', text)
-        # print(self.name)
         for item in text:
-            # print('item', item)
-            # print('condition', item not in self.name)
             if item not in self.name:
                 raise WordError
-        # print('here')
         # Идем с конца
         for letter in self.name[::-1]:
             if letter in text:
@@ -85,10 +84,6 @@ class Word(AbstractUniqueNamedObj):
     unique_letters = models.CharField(max_length=16)
 
     def unique_letter_by_name(self):
-        # result = []
-        # for letter in self.name:
-        #     if letter not in result:
-        #         result.append(letter)
         result = set()
         for letter in self.name:
             result.add(letter)
@@ -125,5 +120,6 @@ class TraningWord(models.Model):
 
     @classmethod
     def get_current_words(cls, current_letter, order_letters):
-        words = cls.objects.filter(last_letter_order__lte=order_letters.get_letter_order(current_letter))
-        return [word.name for word in words]
+        words = cls.objects.filter(last_letter_order__lte=order_letters.get_letter_order(current_letter), order_letters=order_letters)
+        words = [word.name for word in words]
+        return words
