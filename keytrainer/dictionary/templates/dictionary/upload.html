@@ -1,0 +1,36 @@
+{% extends "mainapp/office/base.html" %}
+
+{% block office_content %}
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{form.as_p}}
+        <button type="submit">Загрузить</button>
+    </form>
+
+    {% if result %}
+
+        <table class="table">
+            <tr>
+                <th>Слово</th>
+                <th>Ошибка</th>
+            </tr>
+             {% for item in result %}
+                <tr>
+                    <td>{{item.name}}</td>
+                    <td>
+                        {% if item.error %}
+                            <div class="text-danger">Уже есть в базе</div>
+                        {% else %}
+                            <div class="text-success">Загружено</div>
+                        {% endif %}
+                    </td>
+                </tr>
+             {% endfor %}
+        </table>
+
+    {% endif %}
+
+    <a href="{% url 'dictionary:word_list' %}" class="btn btn-info">К списку слов</a>
+
+{% endblock %}

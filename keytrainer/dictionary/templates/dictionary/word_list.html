@@ -1,0 +1,39 @@
+{% extends "mainapp/office/base.html" %}
+
+{% block office_content %}
+
+<a href="{% url 'dictionary:word_create' %}" class="btn btn-primary">Добавить</a>
+
+<a href="{% url 'dictionary:word_file_upload' %}" class="btn btn-primary">Загрузить из txt</a>
+
+<p></p>
+<form method="post" action="{% url 'dictionary:word_delete_all' %}">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Удалить все</button>
+</form>
+<p></p>
+<h3>Всего слов {{object_list|length}}</h3>
+
+<table class="table">
+    <tr>
+        <th>Слово</th>
+        <th>Буквы</th>
+        <th>Изменить</th>
+        <th>Удалить</th>
+    </tr>
+    {% for item in object_list %}
+    <tr>
+        <td>{{item.name}}</td>
+        <td>{{item.unique_letters}}</td>
+        <td>
+            <a href="{% url 'dictionary:word_update' pk=item.pk %}" class="btn btn-info">Изменить</a>
+        </td>
+        <td>
+            <a href="{% url 'dictionary:word_delete' pk=item.pk %}" class="btn btn-warning">Удалить</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+
+{% endblock %}

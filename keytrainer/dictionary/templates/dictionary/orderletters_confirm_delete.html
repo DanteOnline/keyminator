@@ -1,0 +1,13 @@
+{% extends "mainapp/office/base.html" %}
+
+{% block office_content %}
+
+    Вы действительно хотите удалить {{object.name}}?
+<p></p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Удалить</button>
+    </form>
+
+
+{% endblock %}

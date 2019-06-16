@@ -1,0 +1,17 @@
+{% extends "mainapp/office/base.html" %}
+
+{% block office_content %}
+
+    <h1>{{object.name}}</h1>
+    <h2>Текущая буква {{object.current_letter}}</h2>
+    <h2>Текущий уровень {{object.current_letter_order}}</h2>
+    <h3>Текущие слова</h3>
+    {% for word in object.get_current_words %}
+        {{word}};
+    {% endfor %}
+
+    <p></p>
+    <a href="{% url 'dictionary:game' pk=object.pk %}" class="btn btn-primary">Поехали!</a>
+
+
+{% endblock %}

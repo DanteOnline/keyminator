@@ -1,0 +1,40 @@
+{% extends "mainapp/office/base.html" %}
+
+{% block office_content %}
+    <table class="table">
+        <tr>
+            <th>Описание</th>
+            <th>Порядок букв</th>
+            <th>Текущая буква</th>
+            <th>Текущий уровень</th>
+            <th>Изменить</th>
+            <th>Удалить</th>
+            <th>Слова для тренировки</th>
+            <th>Начать тренировку</th>
+        </tr>
+        {% for item in object_list %}
+            <tr>
+                <td>{{item.description}}</td>
+                <td>{{item.name}}</td>
+                <td>{{item.current_letter}}</td>
+                <td>{{item.current_letter_order}}</td>
+                <td>
+                    <a href="{% url 'dictionary:order_update' pk=item.pk %}" class="btn btn-info">Изменить</a>
+                </td>
+                <td>
+                    <a href="{% url 'dictionary:order_delete' pk=item.pk %}" class="btn btn-warning">Удалить</a>
+                </td>
+                <td>
+                    <a href="{% url 'dictionary:traning_word_list' pk=item.pk %}" class="btn btn-info">Слова</a>
+                </td>
+                <td>
+                    <a href="{% url 'dictionary:order_detail' pk=item.pk %}" class="btn btn-primary">Начать тренировку</a>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+
+    <a href="{% url 'dictionary:order_create' %}" class="btn btn-primary">Добавить</a>
+
+
+{% endblock %}

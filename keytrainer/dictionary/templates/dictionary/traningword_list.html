@@ -1,0 +1,35 @@
+{% extends "mainapp/office/base.html" %}
+
+{% block office_content %}
+
+<h2>{{order_letters.name}}</h2>
+<p></p>
+
+<form method="post" action="{% url 'dictionary:create_traning_word' order_letters_pk=order_letters.pk %}">
+    {% csrf_token %}
+    <button class="btn btn-primary" type="submit">Сгеренировать слова для тренировки</button>
+</form>
+
+
+<p></p>
+<h3>Всего слов {{object_list|length}}</h3>
+
+<table class="table">
+    <tr>
+        <th>Номер</th>
+        <th>Слово</th>
+        <th>Последняя буква</th>
+        <th>Порядок последней буквы</th>
+    </tr>
+    {% for item in object_list %}
+    <tr>
+        <td>{{forloop.counter}}</td>
+        <td>{{item.base_word.name}}</td>
+        <td>{{item.last_letter}}</td>
+        <td>{{item.last_letter_order}}</td>
+
+    </tr>
+    {% endfor %}
+</table>
+
+{% endblock %}
