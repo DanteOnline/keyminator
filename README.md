@@ -1,2 +1,2 @@
-# keyterminator
+# keyminator
 Гибкий тренажер для слепой печати
