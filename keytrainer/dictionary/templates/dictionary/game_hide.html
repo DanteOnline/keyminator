@@ -1,0 +1,12 @@
+{% extends "dictionary/base_game.html" %}
+{% load static %}
+{% block add_data %}
+Время показа: <div id="show_time">{{show_time}}</div> сек
+<p></p>
+{% endblock %}
+{% block level_text %}{{object.get_random_word}}{% endblock %}
+
+{% block add_js %}
+    {{block.super}}
+    <script src="{% static 'js/hide.js' %}"></script>
+{% endblock %}

@@ -1,5 +1,5 @@
 from django.db import models
-from core.models import AbstractUniqueSlugifyNamedObj, AbstractUniqueNamedObj
+from core.models import AbstractUniqueSlugifyNamedObj, AbstractUniqueNamedObj, AbstractNamedObj
 from django.conf import settings
 import random
 
@@ -24,12 +24,14 @@ class OrderLetters(models.Model):
     def get_current_words(self, count=None, is_random=True):
         words = TraningWord.get_current_words(self.current_letter, self)
 
-        #print(words)
-        if is_random:
-            random.shuffle(words)
-        if count:
-            words = words[:count]
+        # print(words)
+        # if is_random:
+        #     random.shuffle(words)
+        # if count:
+        #     words = words[:count]
 
+        if count:
+            words = random.sample(words, count)
 
         return words
 
@@ -42,6 +44,13 @@ class OrderLetters(models.Model):
                 words.append(random.choice(words))
 
         return ' '.join(words)
+
+    def get_random_word(self):
+        # words = TraningWord.get_current_words(self.current_letter, self)
+        words = TraningWord.objects.filter(last_letter_order__lte=self.get_letter_order(self.current_letter),
+                                           order_letters=self)
+        # words = [word.name for word in words]
+        return random.choice(words).name
 
     def save_next_letter(self):
         next_letter_order = self.current_letter_order + 1
@@ -95,7 +104,7 @@ class Word(AbstractUniqueNamedObj):
         return super().save(*args, **kwargs)
 
 
-class TraningWord(models.Model):
+class TraningWord(AbstractNamedObj):
     base_word = models.ForeignKey(Word, on_delete=models.CASCADE)
     order_letters = models.ForeignKey(OrderLetters, on_delete=models.CASCADE)
     last_letter = models.CharField(max_length=1, blank=True)
@@ -104,15 +113,19 @@ class TraningWord(models.Model):
     class Meta:
         ordering = ['last_letter_order']
 
-    @property
-    def name(self):
-        return self.base_word.name
+    # @property
+    # def name(self):
+    #     return self.base_word.name
+
+    def __str__(self):
+        return self.name
 
     def save(self, *args, **kwargs):
         last_letter = self.order_letters.get_last_letter(self.base_word.name)
         self.last_letter = last_letter
         last_letter_order = self.order_letters.get_letter_order(last_letter)
         self.last_letter_order = last_letter_order
+        self.name = self.base_word.name
         return super().save(*args, **kwargs)
 
     class Meta:
@@ -120,6 +133,15 @@ class TraningWord(models.Model):
 
     @classmethod
     def get_current_words(cls, current_letter, order_letters):
-        words = cls.objects.filter(last_letter_order__lte=order_letters.get_letter_order(current_letter), order_letters=order_letters)
-        words = [word.name for word in words]
+        # words = cls.objects.filter(last_letter_order__lte=order_letters.get_letter_order(current_letter),
+        #                            order_letters=order_letters)
+        # words = [word.name for word in words]
+
+        words = cls.objects.filter(last_letter_order__lte=order_letters.get_letter_order(current_letter),
+                                   order_letters=order_letters).values_list('name', flat=True)
+
+
+        # words = cls.objects.filter(last_letter_order__lte=order_letters.get_letter_order(current_letter),
+        #                            order_letters=order_letters)
+        words = list(words)
         return words

@@ -17,6 +17,7 @@ $(function() {
             //console.log("current_letter", current_letter);
             //console.log("letter", letter);
             location.reload();
+
         }
         else {
            current_letter_index += 1;

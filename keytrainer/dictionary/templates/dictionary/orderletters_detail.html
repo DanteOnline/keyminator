@@ -5,13 +5,18 @@
     <h1>{{object.name}}</h1>
     <h2>Текущая буква {{object.current_letter}}</h2>
     <h2>Текущий уровень {{object.current_letter_order}}</h2>
+
+    <a href="{% url 'dictionary:game' pk=object.pk %}" class="btn btn-primary">1. Тренировка вижу-пишу</a>
+    <p></p>
+    <a href="{% url 'dictionary:game_hide' pk=object.pk %}" class="btn btn-primary">2. Тренировка исчезновение</a>
+    <p></p>
     <h3>Текущие слова</h3>
     {% for word in object.get_current_words %}
         {{word}};
     {% endfor %}
 
-    <p></p>
-    <a href="{% url 'dictionary:game' pk=object.pk %}" class="btn btn-primary">Поехали!</a>
+
+
 
 
 {% endblock %}

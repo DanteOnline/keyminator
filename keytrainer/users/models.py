@@ -8,3 +8,4 @@ class User(AbstractUser):
     # настройки
     random_words = models.BooleanField(default=True)
     words_count = models.PositiveIntegerField(default=5)
+    show_time = models.PositiveIntegerField(default=5)

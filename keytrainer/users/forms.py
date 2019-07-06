@@ -45,7 +45,7 @@ class UpdateUserForm(UserChangeForm):
 
     class Meta:
         model = User
-        fields = ('words_count', 'random_words')
+        fields = ('words_count', 'random_words', 'show_time')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

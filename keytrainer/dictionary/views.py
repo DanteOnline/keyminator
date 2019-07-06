@@ -42,9 +42,24 @@ class OrderLetterDetailView(DetailView):
 
 
 class GameDetailView(DetailView):
+    """
+    See - Write training
+    """
     model = OrderLetters
     template_name = 'dictionary/game.html'
 
+
+class GameHideDetailView(DetailView):
+    """
+    Hide traning
+    """
+    model = OrderLetters
+    template_name = 'dictionary/game_hide.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['show_time'] = self.request.user.show_time
+        return context
 
 # СЛова
 

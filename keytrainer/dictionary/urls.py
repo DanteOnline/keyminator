@@ -14,6 +14,7 @@ urlpatterns = [
     path('order-prev-level/<int:pk>/', views.set_prev_level, name='order_prev_level'),
 
     path('game/<int:pk>/', views.GameDetailView.as_view(), name='game'),
+    path('game-hide/<int:pk>/', views.GameHideDetailView.as_view(), name='game_hide'),
 
     path('word-list', views.WordListView.as_view(), name='word_list'),
     path('word-create', views.WordCreateView.as_view(), name='word_create'),

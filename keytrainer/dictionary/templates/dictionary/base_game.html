@@ -1,0 +1,35 @@
+{% extends "main.html" %}
+{% load static %}
+
+{% block content %}
+
+    <h2>Текущая буква {{object.current_letter}}</h2>
+    <h3>Текущий уровень {{object.current_letter_order}}</h3>
+<p></p>
+{% block add_data %}
+{% endblock %}
+
+<div class="form-group">
+  &nbsp;&nbsp;&nbsp;<label for="game_input" id="level_text">{% block level_text %}{% endblock %}</label>
+  <textarea class="form-control rounded-0" id="game_input" rows="10"></textarea>
+</div>
+
+<p></p>
+
+<form method="post" action="{% url 'dictionary:order_next_level' pk=object.pk %}">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-success">На следующий уровень</button>
+</form>
+
+<p></p>
+<form method="post" action="{% url 'dictionary:order_prev_level' pk=object.pk %}">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-warning">На предыдущий уровень</button>
+</form>
+
+
+{% endblock %}
+
+{% block add_js %}
+    <script src="{% static 'js/game.js' %}"></script>
+{% endblock %}
