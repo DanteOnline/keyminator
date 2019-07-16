@@ -66,12 +66,19 @@ class GameHideDetailView(DetailView):
 class WordListView(ListView):
     model = Word
     # TODO: вывести пагинацию на стрнице
-    paginate_by = 100
+    # paginate_by = 100
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
         context['obj_count'] = self.model.objects.count()
         return context
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        if 'search' in self.request.GET:
+            search = self.request.GET.get('search')
+            queryset = queryset.filter(name__contains=search)
+        return queryset
 
 
 class WordCreateView(CreateView):
@@ -130,30 +137,6 @@ def handle_uploaded_file(f):
                 except Exception:
                     word_result[ERROR_KEY] = True
                     result.append(word_result)
-                # else:
-                #     # Если слово прошло, добавляем знаки припинания [ ] ; ' \ , . /
-                #     end_simbols = [',', '.', ';']
-                #     for item in end_simbols:
-                #         new_name = new_word.name + item
-                #         Word.objects.create(name=new_name)
-                #
-                #     random_simbols = ['/', '\\']
-                #     for item in random_simbols:
-                #         if random.random() > 0.5:
-                #             new_name = new_word.name + item
-                #         else:
-                #             new_name = item + new_word.name
-                #         Word.objects.create(name=new_name)
-                #
-                #     pair_simbols = [('[', ']')]
-                #     for item in pair_simbols:
-                #         new_name = item[0] + new_word.name + item[1]
-                #         Word.objects.create(name=new_name)
-                #
-                #     both_simbols = ['\'']
-                #     for item in both_simbols:
-                #         new_name = item + new_word.name + item
-                #         Word.objects.create(name=new_name)
 
         return result
 
@@ -216,6 +199,73 @@ def add_specsimbols(request):
 
         return HttpResponseRedirect(reverse('dictionary:word_list'))
 
+    else:
+        raise Http404
+
+
+#@transaction.atomic
+def add_numbers(request):
+    if request.method == 'POST':
+        numbers = ('0', '1', '2', '3', '4', '5', '6', '7', '8', '9')
+        len_numbers = (1, 2, 3)
+        # words count
+        count = 150
+        for i in range(count):
+            # check length from 1 to 3
+            len_number = random.choice(len_numbers)
+            result = []
+            for _ in range(len_number):
+                result.append(random.choice(numbers))
+
+            name = ''.join(result)
+            try:
+
+                new_word = Word.objects.create(name=name)
+                print(new_word.name)
+            except Exception as e:
+                print(f'такая цифра уже есть: {name} {e}')
+                len_number = random.choice(len_numbers)
+                result = []
+                for j in range(len_number):
+                    result.append(random.choice(numbers))
+                name = ''.join(result)
+                try:
+                    new_word = Word.objects.create(name=name)
+                    print(new_word.name)
+                except Exception as e:
+                    print(f'такая цифра уже есть2: {name} {e}')
+            print(f'% {(i/count)*100}')
+        return HttpResponseRedirect(reverse('dictionary:word_list'))
+    else:
+        raise Http404
+
+@transaction.atomic
+def add_passwords(request):
+    if request.method == 'POST':
+        letters = 'abcdefghijklmnopqrstuvwxyz123456789'
+        len_numbers = (4, 5, 6, 7, 8, 9)
+        # words count
+        count = 300
+        for i in range(count):
+            # check length from 1 to 3
+            len_number = random.choice(len_numbers)
+            result = []
+            for _ in range(len_number):
+                letter = random.choice(letters)
+                # Маленькая или большая буква
+                if random.random() < 0.5:
+                    letter = letter.upper()
+                result.append(letter)
+            name = ''.join(result)
+            try:
+
+                new_word = Word.objects.create(name=name)
+                print(new_word.name)
+            except Exception as e:
+                print(f'Ошибка: {e}')
+                print(f'такой пароль уже есть: {name}')
+            print(f'% {(i/count)*100}')
+        return HttpResponseRedirect(reverse('dictionary:word_list'))
     else:
         raise Http404
 

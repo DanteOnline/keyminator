@@ -15,7 +15,7 @@ class OrderLetters(models.Model):
     """
     Порядок букв
     """
-    name = models.CharField(max_length=64, unique=True)
+    name = models.CharField(max_length=128, unique=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     current_letter = models.CharField(max_length=1, default='a')
     current_letter_order = models.PositiveIntegerField(default=1)
@@ -30,7 +30,8 @@ class OrderLetters(models.Model):
         # if count:
         #     words = words[:count]
 
-        if count:
+        #TODO: костыль неправильно работает если мало слов
+        if count and words and count < len(words):
             words = random.sample(words, count)
 
         return words

@@ -17,6 +17,20 @@
     <button type="submit" class="btn btn-primary">Добавить спецсимволы</button>
 </form>
 <p></p>
+<form method="post" action="{% url 'dictionary:word_add_numbers' %}">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-primary">Добавить цифры</button>
+</form>
+<p></p>
+<form method="post" action="{% url 'dictionary:word_add_passwords' %}">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-primary">Добавить пароли</button>
+</form>
+<p></p>
+<form method="get">
+    <input type="text" name="search">
+    <button type="submit" class="btn btn-primary">Поиск</button>
+</form>
 <h3>Всего слов {{obj_count}}</h3>
 
 <table class="table">
